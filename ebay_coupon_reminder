@@ -1,0 +1,53 @@
+// ==UserScript==
+// @name         eBay Coupon Reminder with Permission Handling
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Try to show a notification when visiting eBay to remind about a coupon code
+// @author       You
+// @match        *://*pay.ebay.com*/*
+// @grant        none
+// @run-at       document-start
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    console.log("eBay Coupon Reminder Script Loaded");
+
+    // Function to show the coupon reminder notification
+    function showCouponReminder() {
+        const couponCode = 'YOUR_COUPON_CODE_HERE'; // Replace with your actual coupon code
+        const notification = new Notification("eBay Coupon Reminder", {
+            body: `Don't forget to use your coupon code: ${couponCode} on your next purchase!`,
+            icon: 'https://www.ebay.com/favicon.ico'
+        });
+
+        // Log when the notification is clicked
+        notification.onclick = function() {
+            console.log('Notification clicked');
+        };
+    }
+
+    // Function to handle the notification permission request
+    function handleNotificationPermission() {
+        if (Notification.permission === "granted") {
+            console.log("Notification permission already granted");
+            showCouponReminder();
+        } else if (Notification.permission !== "denied") {
+            console.log("Notification permission is not denied (either default or prompt)");
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted after request");
+                    showCouponReminder();
+                } else {
+                    console.log("Notification permission denied after request");
+                }
+            });
+        } else {
+            console.log("Notification permission was previously denied, cannot show notifications.");
+        }
+    }
+
+    // Call the handleNotificationPermission function when the script loads
+    handleNotificationPermission();
+})();
